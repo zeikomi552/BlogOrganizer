@@ -48,60 +48,101 @@ namespace BlogOrganizer.ViewModels
         }
         #endregion
 
+        /// <summary>
+        /// ファイルの出力処理
+        /// </summary>
+        public void OutputContents()
+        {
+            try
+            {
+                StringBuilder content = new StringBuilder();
+                foreach (var tmp in this.BlogElement.WpContents)
+                {
+                    content.AppendLine(tmp.Post_content_View);
+                }
 
+
+                // ダイアログのインスタンスを生成
+                var dialog = new SaveFileDialog();
+
+                // ファイルの種類を設定
+                dialog.Filter = "テキストファイル (*.txt)|*.txt|全てのファイル (*.*)|*.*";
+
+                // ダイアログを表示する
+                if (dialog.ShowDialog() == true)
+                {
+                    //第1引数：ファイルパス
+                    //第2引数：追記するテキスト 
+                    File.WriteAllText(dialog.FileName, content.ToString());
+                }
+            }
+            catch (Exception e)
+            {
+                ShowMessage.ShowErrorOK(e.Message, "Error");
+            }
+        }
+
+        /// <summary>
+        /// ファイルを開く処理
+        /// </summary>
         public void OpenFile()
         {
-            // ダイアログのインスタンスを生成
-            var dialog = new OpenFileDialog();
-
-            // ファイルの種類を設定
-            dialog.Filter = "テキストファイル (*.sql)|*.sql";
-
-            // ダイアログを表示する
-            if (dialog.ShowDialog() == true)
+            try
             {
-                string line = "";
-                //ArrayList al = new ArrayList();
 
-                using (StreamReader sr = new StreamReader(
-                    dialog.FileName, Encoding.UTF8))
+                // ダイアログのインスタンスを生成
+                var dialog = new OpenFileDialog();
+
+                // ファイルの種類を設定
+                dialog.Filter = "テキストファイル (*.sql)|*.sql";
+
+                // ダイアログを表示する
+                if (dialog.ShowDialog() == true)
                 {
-                    bool content_query_F = false;
-                    while ((line = sr.ReadLine()) != null)
+                    string line = "";
+                    //ArrayList al = new ArrayList();
+
+                    using (StreamReader sr = new StreamReader(
+                        dialog.FileName, Encoding.UTF8))
                     {
-                        if (content_query_F)
+                        bool content_query_F = false;
+                        while ((line = sr.ReadLine()) != null)
                         {
-                            //string match_pattern = @"(.,.,'\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d','\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d','','.+','','.+','.+','.+','','.+','','','\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d','\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d','',.+,'.+',\d,'.+','.+',.)";
-                            string match_pattern 
-                                = @"\((\d*?),(\d*?),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('.*?'),(.*?),('.*?'),(.*?),('.*?'),('.*?'),(.*?)\)";// (.*?),\d*\)";
-
-                            //Insert文の()内の挿入句をすべて抽出する
-                            System.Text.RegularExpressions.MatchCollection mc =
-                                System.Text.RegularExpressions.Regex.Matches(
-                                line, match_pattern);
-
-                            foreach (var tmp in mc)
+                            if (content_query_F)
                             {
-                                var wp_content = Wp_ContentsM.DivParameters(tmp.ToString());
+                                string match_pattern
+                                    = @"\((\d*?),(\d*?),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('.*?'),(.*?),('.*?'),(.*?),('.*?'),('.*?'),(.*?)\)";// (.*?),\d*\)";
 
-                                // revisionやautosaveが含まれている場合は履歴なので無視
-                                // コンテンツに文字列が含まれてない場合は無視
-                                // タイトルがない場合は無視
-                                if (wp_content.Post_type.Equals("post"))
+                                //Insert文の()内の挿入句をすべて抽出する
+                                System.Text.RegularExpressions.MatchCollection mc =
+                                    System.Text.RegularExpressions.Regex.Matches(
+                                    line, match_pattern);
+
+                                foreach (var tmp in mc)
                                 {
-                                    this.BlogElement.Add(wp_content);
+                                    var wp_content = Wp_ContentsM.DivParameters(tmp.ToString());
+
+                                    // revisionやautosaveが含まれている場合は履歴なので無視
+                                    // コンテンツに文字列が含まれてない場合は無視
+                                    // タイトルがない場合は無視
+                                    if (wp_content.Post_type.Equals("post"))
+                                    {
+                                        this.BlogElement.Add(wp_content);
+                                    }
                                 }
                             }
 
-
-                        }
-
-                        if (line.Contains("LOCK TABLES `wp_posts` WRITE;"))
-                        {
-                            content_query_F = true;
+                            if (line.Contains("LOCK TABLES `wp_posts` WRITE;"))
+                            {
+                                content_query_F = true;
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                ShowMessage.ShowErrorOK(e.Message, "Error");
             }
         }
     }

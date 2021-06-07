@@ -24,6 +24,13 @@
                     </b:EventTrigger>
                 </b:Interaction.Triggers>
             </Button>
+            <Button Margin="5" VerticalAlignment="Center" Content="ファイル出力">
+                <b:Interaction.Triggers>
+                    <b:EventTrigger EventName="Click">
+                        <b:CallMethodAction TargetObject="{Binding}" MethodName="OutputContents"/>
+                    </b:EventTrigger>
+                </b:Interaction.Triggers>
+            </Button>
         </StackPanel>
 
         <Grid Margin="5" Grid.Row="1">
