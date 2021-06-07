@@ -4,9 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BlogOrganizer"
-        xmlns:b="http://schemas.microsoft.com/xaml/behaviors" x:Class="BlogOrganizer.MainWindow"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors" xmlns:ViewModels="clr-namespace:BlogOrganizer.ViewModels" x:Class="BlogOrganizer.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.DataContext>
+        <ViewModels:MainWindowVM/>
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -14,12 +17,10 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal">
-            <TextBlock Margin="5" VerticalAlignment="Center" Text="SQLファイルパス:"/>
-            <TextBox IsReadOnly="True" Margin="5" VerticalAlignment="Center" Width="250" Text=""/>
             <Button Margin="5" VerticalAlignment="Center" Content="ファイル選択">
                 <b:Interaction.Triggers>
                     <b:EventTrigger EventName="Click">
-                        <b:CallMethodAction/>
+                        <b:CallMethodAction TargetObject="{Binding}" MethodName="OpenFile"/>
                     </b:EventTrigger>
                 </b:Interaction.Triggers>
             </Button>
@@ -31,13 +32,21 @@
                 <ColumnDefinition Width="263*"/>
             </Grid.ColumnDefinitions>
 
-            <DataGrid Margin="5">
+            <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding BlogElement.WpContents.Items}"
+                      SelectedItem="{Binding BlogElement.WpContents.SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      Margin="5">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="記事タイトル"/>
+                    <DataGridTextColumn Header="ID" Binding="{Binding ID}"/>
+                    <DataGridTextColumn Header="タイトル" Binding="{Binding Post_title}"/>
+                    <DataGridTextColumn Header="タイトル(論理名)" Binding="{Binding Post_name}"/>
+                    <DataGridTextColumn Header="修正日" Binding="{Binding Post_modified}"/>
+                    <DataGridTextColumn Header="Type" Binding="{Binding Post_type}"/>
                 </DataGrid.Columns>
             </DataGrid>
 
-            <TextBox IsReadOnly="True" Margin="5" Grid.Column="1" Text=""/>
+
+
+            <TextBox TextWrapping="Wrap" IsReadOnly="True" Margin="5" Grid.Column="1" Text="{Binding BlogElement.WpContents.SelectedItem.Post_content_View}"/>
 
         </Grid>
 
