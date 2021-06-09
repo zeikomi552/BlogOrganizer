@@ -122,11 +122,13 @@ namespace BlogOrganizer.ViewModels
                                 {
                                     var wp_content = Wp_ContentsM.DivParameters(tmp.ToString());
 
+
                                     // revisionやautosaveが含まれている場合は履歴なので無視
                                     // コンテンツに文字列が含まれてない場合は無視
                                     // タイトルがない場合は無視
                                     if (wp_content.Post_type.Equals("post"))
                                     {
+                                        wp_content.UseMecab();
                                         this.BlogElement.Add(wp_content);
                                     }
                                 }

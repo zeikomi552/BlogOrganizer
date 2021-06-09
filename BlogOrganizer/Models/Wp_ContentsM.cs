@@ -1,4 +1,6 @@
-﻿using MVVMCore.BaseClass;
+﻿using MeCab;
+using MVVMCore.BaseClass;
+using MVVMCore.Common.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +37,57 @@ namespace BlogOrganizer.Models
 		}
 		#endregion
 
+		#region MeCabの解析結果[MeCabItems]プロパティ
+		/// <summary>
+		/// MeCabの解析結果[MeCabItems]プロパティ用変数
+		/// </summary>
+		ModelList<MeCab.MeCabNode> _MeCabItems = new ModelList<MeCab.MeCabNode>();
+		/// <summary>
+		/// MeCabの解析結果[MeCabItems]プロパティ
+		/// </summary>
+		public ModelList<MeCab.MeCabNode> MeCabItems
+		{
+			get
+			{
+				return _MeCabItems;
+			}
+			set
+			{
+				if (_MeCabItems == null || !_MeCabItems.Equals(value))
+				{
+					_MeCabItems = value;
+					NotifyPropertyChanged("MeCabItems");
+				}
+			}
+		}
+		#endregion
+
+		#region [TopNoun]プロパティ
+		/// <summary>
+		/// [TopNoun]プロパティ用変数
+		/// </summary>
+		string _TopNoun = string.Empty;
+		/// <summary>
+		/// [TopNoun]プロパティ
+		/// </summary>
+		public string TopNoun
+		{
+			get
+			{
+				return _TopNoun;
+			}
+			set
+			{
+				if (!_TopNoun.Equals(value))
+				{
+					_TopNoun = value;
+					NotifyPropertyChanged("TopNoun");
+				}
+			}
+		}
+		#endregion
+
+
 		#region [ID]プロパティ
 		/// <summary>
 		/// [ID]プロパティ用変数
@@ -59,6 +112,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_author]プロパティ
 		/// <summary>
 		/// [Post_author]プロパティ用変数
@@ -83,6 +137,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_date]プロパティ
 		/// <summary>
 		/// [Post_date]プロパティ用変数
@@ -107,6 +162,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_date_gmt]プロパティ
 		/// <summary>
 		/// [Post_date_gmt]プロパティ用変数
@@ -131,6 +187,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_content]プロパティ
 		/// <summary>
 		/// [Post_content]プロパティ用変数
@@ -155,6 +212,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_title]プロパティ
 		/// <summary>
 		/// [Post_title]プロパティ用変数
@@ -179,6 +237,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_excerpt]プロパティ
 		/// <summary>
 		/// [Post_excerpt]プロパティ用変数
@@ -203,6 +262,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_status]プロパティ
 		/// <summary>
 		/// [Post_status]プロパティ用変数
@@ -227,6 +287,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Comment_status]プロパティ
 		/// <summary>
 		/// [Comment_status]プロパティ用変数
@@ -251,6 +312,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Ping_status]プロパティ
 		/// <summary>
 		/// [Ping_status]プロパティ用変数
@@ -275,6 +337,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_password]プロパティ
 		/// <summary>
 		/// [Post_password]プロパティ用変数
@@ -299,6 +362,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_name]プロパティ
 		/// <summary>
 		/// [Post_name]プロパティ用変数
@@ -323,6 +387,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [To_ping]プロパティ
 		/// <summary>
 		/// [To_ping]プロパティ用変数
@@ -347,6 +412,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Pinged]プロパティ
 		/// <summary>
 		/// [Pinged]プロパティ用変数
@@ -371,6 +437,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_modified]プロパティ
 		/// <summary>
 		/// [Post_modified]プロパティ用変数
@@ -395,6 +462,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_modified_gmt]プロパティ
 		/// <summary>
 		/// [Post_modified_gmt]プロパティ用変数
@@ -419,6 +487,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_content_filtered]プロパティ
 		/// <summary>
 		/// [Post_content_filtered]プロパティ用変数
@@ -443,6 +512,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_parent]プロパティ
 		/// <summary>
 		/// [Post_parent]プロパティ用変数
@@ -467,6 +537,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Guid]プロパティ
 		/// <summary>
 		/// [Guid]プロパティ用変数
@@ -491,6 +562,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Menu_order]プロパティ
 		/// <summary>
 		/// [Menu_order]プロパティ用変数
@@ -515,6 +587,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_type]プロパティ
 		/// <summary>
 		/// [Post_type]プロパティ用変数
@@ -539,6 +612,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Post_mime_type]プロパティ
 		/// <summary>
 		/// [Post_mime_type]プロパティ用変数
@@ -563,6 +637,7 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
 		#region [Comment_count]プロパティ
 		/// <summary>
 		/// [Comment_count]プロパティ用変数
@@ -588,6 +663,13 @@ namespace BlogOrganizer.Models
 		}
 		#endregion
 
+
+		#region パラメータの分解処理
+		/// <summary>
+		/// パラメータの分解処理
+		/// </summary>
+		/// <param name="full_text">クエリ全文</param>
+		/// <returns>クエリ分解結果</returns>
 		public static Wp_ContentsM DivParameters(string full_text)
 		{
 			Wp_ContentsM ret = new Wp_ContentsM();
@@ -686,7 +768,7 @@ namespace BlogOrganizer.Models
 
 			return ret;
 		}
-
+		#endregion
 
 		#region 記事内容の画面表示用[Post_content_View]プロパティ
 		/// <summary>
@@ -713,6 +795,43 @@ namespace BlogOrganizer.Models
 		}
 		#endregion
 
+
+		public void UseMecab()
+        {
+			var tagger = MeCabTagger.Create();
+			this.MeCabItems.Items.Clear();
+			List<string> noun = new List<string>();
+
+
+			foreach (var node in tagger.ParseToNodes(this.Post_content_View))
+			{
+                if (0 < node.CharType)
+                {
+                    this.MeCabItems.Items.Add(node);
+					var tmp = node.Feature.Split(",");
+
+
+					if (tmp.ElementAt(0).Equals("名詞"))
+                    {
+						noun.Add(node.Surface);
+                    }
+
+
+                }
+			}
+			var nounGroup = noun.GroupBy(c => c)
+				.Select(c => new { Noun = c.Key, Count = c.Count() })
+				.OrderByDescending(c => c.Count);
+
+			StringBuilder noun_text = new StringBuilder();
+			foreach (var noun_item in nounGroup)
+			{
+				noun_text.Append(noun_item.Noun.ToString() + string.Format("({0}) ", noun_item.Count));
+			}
+
+			this.TopNoun = noun_text.ToString();
+
+		}
 
 	}
 }
