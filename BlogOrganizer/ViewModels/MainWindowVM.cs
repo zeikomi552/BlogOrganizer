@@ -63,16 +63,29 @@ namespace BlogOrganizer.ViewModels
         }
         #endregion
 
-
+        #region 初期化処理
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public override void Init(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
         }
+        #endregion
 
+        #region クローズ処理
+        /// <summary>
+        /// クローズ処理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public override void Close(object sender, EventArgs e)
         {
             //throw new NotImplementedException();   
         }
+        #endregion
 
         #region ブログの要素[BlogElement]プロパティ
         /// <summary>
@@ -99,6 +112,7 @@ namespace BlogOrganizer.ViewModels
         }
         #endregion
 
+        #region ファイルの出力処理
         /// <summary>
         /// ファイルの出力処理
         /// </summary>
@@ -132,7 +146,11 @@ namespace BlogOrganizer.ViewModels
                 ShowMessage.ShowErrorOK(e.Message, "Error");
             }
         }
+        #endregion
 
+        List<KeyValuePair<string, int>> _AllRank = new List<KeyValuePair<string, int>>();
+
+        #region ファイルを開く処理
         /// <summary>
         /// ファイルを開く処理
         /// </summary>
@@ -147,60 +165,55 @@ namespace BlogOrganizer.ViewModels
                 // ファイルの種類を設定
                 dialog.Filter = "テキストファイル (*.sql)|*.sql";
 
+
+
                 // ダイアログを表示する
                 if (dialog.ShowDialog() == true)
                 {
-                    string line = "";
-                    //ArrayList al = new ArrayList();
+                    var query_contents = FileAnalyzerM.GetQueryParameters(dialog.FileName);
 
-                    using (StreamReader sr = new StreamReader(
-                        dialog.FileName, Encoding.UTF8))
+                    foreach (var tmp in query_contents)
                     {
-                        bool content_query_F = false;
-                        while ((line = sr.ReadLine()) != null)
+                        var wp_content = FileAnalyzerM.DivParameters(tmp);
+
+                        // revisionやautosaveが含まれている場合は履歴なので無視
+                        // コンテンツに文字列が含まれてない場合は無視
+                        // タイトルがない場合は無視
+                        if (wp_content.Post_type.Equals("post"))
                         {
-                            if (content_query_F)
-                            {
-                                string match_pattern
-                                    = @"\((\d*?),(\d*?),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('.*?'),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),('.*?'),(.*?),('.*?'),(.*?),('.*?'),('.*?'),(.*?)\)";// (.*?),\d*\)";
-
-                                //Insert文の()内の挿入句をすべて抽出する
-                                System.Text.RegularExpressions.MatchCollection mc =
-                                    System.Text.RegularExpressions.Regex.Matches(
-                                    line, match_pattern);
-
-                                foreach (var tmp in mc)
-                                {
-                                    var wp_content = Wp_ContentsM.DivParameters(tmp.ToString());
-
-
-                                    // revisionやautosaveが含まれている場合は履歴なので無視
-                                    // コンテンツに文字列が含まれてない場合は無視
-                                    // タイトルがない場合は無視
-                                    if (wp_content.Post_type.Equals("post"))
-                                    {
-                                        wp_content.UseMecab();
-                                        this.BlogElement.Add(wp_content);
-                                    }
-                                }
-                            }
-
-                            if (line.Contains("LOCK TABLES `wp_posts` WRITE;"))
-                            {
-                                content_query_F = true;
-                            }
+                            this.BlogElement.Add(wp_content);
                         }
                     }
                 }
 
+                // MeCabで各記事を形態素解析
+                this.BlogElement.AnalysisMeCab();
+
+                this._AllRank = this.BlogElement.GetNounRank();
+
                 this.RowNum = this.BlogElement.WpContents.Items.Count;
                 this.NounNum = (from x in this.BlogElement.WpContents.Items
                                select x.TopNoun).Distinct().Count();
+
+                SetCategory();
             }
             catch (Exception e)
             {
                 ShowMessage.ShowErrorOK(e.Message, "Error");
             }
         }
+        #endregion
+
+        public void SetCategory()
+        {
+            foreach (var tmp in this.BlogElement.WpContents.Items)
+            {
+                var cate = tmp.GetCategory(this._AllRank);
+
+                tmp.Category = cate;
+            }
+
+        }
+
     }
 }

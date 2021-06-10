@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:BlogOrganizer"
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors" xmlns:ViewModels="clr-namespace:BlogOrganizer.ViewModels" x:Class="BlogOrganizer.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="ブログ分析" Height="450" Width="800">
     <Window.DataContext>
         <ViewModels:MainWindowVM/>
     </Window.DataContext>
@@ -55,6 +55,7 @@
                     <DataGridTextColumn Header="タイトル(論理名)" Binding="{Binding Post_name}"/>
                     <DataGridTextColumn Header="修正日" Binding="{Binding Post_modified}"/>
                     <DataGridTextColumn Header="Type" Binding="{Binding Post_type}"/>
+                    <DataGridTextColumn Header="カテゴリ" Binding="{Binding Category}"/>
                     <DataGridTextColumn Header="名詞" Binding="{Binding TopNoun}"/>
                 </DataGrid.Columns>
             </DataGrid>

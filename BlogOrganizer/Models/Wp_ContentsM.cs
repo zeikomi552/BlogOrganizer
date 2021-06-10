@@ -64,24 +64,19 @@ namespace BlogOrganizer.Models
 
 		#region [TopNoun]プロパティ
 		/// <summary>
-		/// [TopNoun]プロパティ用変数
-		/// </summary>
-		string _TopNoun = string.Empty;
-		/// <summary>
 		/// [TopNoun]プロパティ
 		/// </summary>
 		public string TopNoun
 		{
 			get
 			{
-				return _TopNoun;
-			}
-			set
-			{
-				if (!_TopNoun.Equals(value))
+				if (this._NounRank.Count > 0)
 				{
-					_TopNoun = value;
-					NotifyPropertyChanged("TopNoun");
+					return this._NounRank.ElementAt(0).Key;
+				}
+				else
+				{
+					return string.Empty;
 				}
 			}
 		}
@@ -89,28 +84,48 @@ namespace BlogOrganizer.Models
 
 		#region 名詞・使用順リスト[TopNounAll]プロパティ
 		/// <summary>
-		/// 名詞・使用順リスト[TopNounAll]プロパティ用変数
-		/// </summary>
-		string _TopNounAll = string.Empty;
-		/// <summary>
 		/// 名詞・使用順リスト[TopNounAll]プロパティ
 		/// </summary>
 		public string TopNounAll
 		{
 			get
 			{
-				return _TopNounAll;
+				StringBuilder txt = new StringBuilder();
+				foreach (var tmp in this._NounRank)
+				{
+					txt.Append(string.Format("{0}({1}) ", tmp.Key, tmp.Value));
+				}
+
+				return txt.ToString();
+			}
+		}
+		#endregion
+
+		#region カテゴリ[Category]プロパティ
+		/// <summary>
+		/// カテゴリ[Category]プロパティ用変数
+		/// </summary>
+		string _Category = string.Empty;
+		/// <summary>
+		/// カテゴリ[Category]プロパティ
+		/// </summary>
+		public string Category
+		{
+			get
+			{
+				return _Category;
 			}
 			set
 			{
-				if (!_TopNounAll.Equals(value))
+				if (!_Category.Equals(value))
 				{
-					_TopNounAll = value;
-					NotifyPropertyChanged("TopNounAll");
+					_Category = value;
+					NotifyPropertyChanged("Category");
 				}
 			}
 		}
 		#endregion
+
 
 		#region [ID]プロパティ
 		/// <summary>
@@ -687,113 +702,6 @@ namespace BlogOrganizer.Models
 		}
 		#endregion
 
-
-		#region パラメータの分解処理
-		/// <summary>
-		/// パラメータの分解処理
-		/// </summary>
-		/// <param name="full_text">クエリ全文</param>
-		/// <returns>クエリ分解結果</returns>
-		public static Wp_ContentsM DivParameters(string full_text)
-		{
-			Wp_ContentsM ret = new Wp_ContentsM();
-			string div_text = full_text = full_text.Trim().Replace("\\r", "").Replace("\\n", "");
-			div_text = div_text.Replace("(", "").Replace(")", "");
-
-			ret.FullText = full_text;
-
-
-			string match_pattern1 = @"([0-9]+?),";
-			string match_pattern2 = @"('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),";
-			string match_pattern3 = @"('.*?'),";
-
-
-			//Insert文の()内の挿入句をすべて抽出する
-			System.Text.RegularExpressions.MatchCollection mc1 =
-				System.Text.RegularExpressions.Regex.Matches(
-				full_text, match_pattern1);
-
-			ret.ID = long.Parse(mc1.ElementAt(0).ToString().Replace(",",""));
-			ret.Post_author = long.Parse(mc1.ElementAt(1).ToString().Replace(",", ""));
-			ret.Post_parent = long.Parse(mc1.ElementAt(2).ToString().Replace(",", ""));
-			ret.Menu_order = int.Parse(mc1.ElementAt(3).ToString().Replace(",", ""));
-			//ret.Comment_count = long.Parse(mc1.ElementAt(4).ToString().Replace(")", ""));
-
-
-			//Insert文の()内の挿入句をすべて抽出する
-			System.Text.RegularExpressions.MatchCollection mc2 =
-				System.Text.RegularExpressions.Regex.Matches(
-				full_text, match_pattern2);
-
-			DateTime tmp_date = DateTime.MinValue;
-			DateTime.TryParseExact(mc2.ElementAt(0).ToString().Replace(",", "").Replace("'",""), "yyyy-MM-dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out tmp_date);
-			ret.Post_date = tmp_date;
-			DateTime.TryParseExact(mc2.ElementAt(1).ToString().Replace(",", "").Replace("'", ""), "yyyy-MM-dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out tmp_date);
-			ret.Post_date_gmt = tmp_date;
-			DateTime.TryParseExact(mc2.ElementAt(2).ToString().Replace(",", "").Replace("'", ""), "yyyy-MM-dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out tmp_date);
-			ret.Post_modified = tmp_date;
-			DateTime.TryParseExact(mc2.ElementAt(3).ToString().Replace(",", "").Replace("'", ""), "yyyy-MM-dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out tmp_date);
-			ret.Post_modified_gmt = tmp_date;
-
-
-			full_text = full_text.Replace(mc1.ElementAt(0).ToString(), "");
-			full_text = full_text.Replace(mc1.ElementAt(1).ToString(), "");
-			full_text = full_text.Replace(mc1.ElementAt(2).ToString(), "");
-			full_text = full_text.Replace(mc1.ElementAt(3).ToString(), "");
-			//full_text = full_text.Replace(mc1.ElementAt(4).ToString(), "");
-
-			full_text = full_text.Replace(mc2.ElementAt(0).ToString(), "");
-			full_text = full_text.Replace(mc2.ElementAt(1).ToString(), "");
-			full_text = full_text.Replace(mc2.ElementAt(2).ToString(), "");
-			full_text = full_text.Replace(mc2.ElementAt(3).ToString(), "");
-
-
-			//Insert文の()内の挿入句をすべて抽出する
-			System.Text.RegularExpressions.MatchCollection mc3 =
-				System.Text.RegularExpressions.Regex.Matches(
-				full_text, match_pattern3);
-
-			int index = mc3.Count - 1;
-			ret.Post_mime_type = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.Post_type = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.Guid = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.Post_content_filtered = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.Pinged = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.To_ping = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.Post_name = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.Post_password = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.Ping_status = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.Comment_status = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.Post_status = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.Post_excerpt = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-			ret.Post_title = mc3.ElementAt(index--).ToString().Replace(",", "").Replace("'", "");
-
-			for (int index_tmp = index; index_tmp >= 0; index_tmp--)
-			{
-				ret.Post_content = mc3.ElementAt(index_tmp).ToString().Replace(",", "").Replace("'", "");
-			}
-
-
-			string match_pattern4 = "<(\".*?\"|'.*?'|[^'\"])*?>";
-			//Insert文の()内の挿入句をすべて抽出する
-			System.Text.RegularExpressions.MatchCollection mc4 =
-				System.Text.RegularExpressions.Regex.Matches(
-				ret.Post_content, match_pattern4);
-
-			string tmp_txt = ret.Post_content;
-			foreach (var html_tag in mc4)
-			{
-				tmp_txt = tmp_txt.Replace(html_tag.ToString(), "");
-			}
-
-			ret.Post_content_View = tmp_txt;
-
-
-
-			return ret;
-		}
-		#endregion
-
 		#region 記事内容の画面表示用[Post_content_View]プロパティ
 		/// <summary>
 		/// 記事内容の画面表示用[Post_content_View]プロパティ用変数
@@ -819,6 +727,8 @@ namespace BlogOrganizer.Models
 		}
 		#endregion
 
+
+		List<KeyValuePair<string, int>> _NounRank = new List<KeyValuePair<string, int>>();
 		/// <summary>
 		/// MeCabを使用した処理
 		/// </summary>
@@ -829,14 +739,15 @@ namespace BlogOrganizer.Models
 			this.MeCabItems.Items.Clear();
 			List<string> noun = new List<string>();
 
-
+			// 記事毎の内容をMeCabで分析
 			foreach (var node in tagger.ParseToNodes(this.Post_content_View))
 			{
                 if (0 < node.CharType)
                 {
                     this.MeCabItems.Items.Add(node);
-					var tmp = node.Feature.Split(",");
 
+					// Featureの内容を分解（品詞を限定する）
+					var tmp = node.Feature.Split(",");
 
 					if (tmp.ElementAt(0).Equals("名詞") && tmp.ElementAt(1).Equals("一般"))
                     {
@@ -844,26 +755,45 @@ namespace BlogOrganizer.Models
                     }
                 }
 			}
-			var nounGroup = noun.GroupBy(c => c)
-				.Select(c => new { Noun = c.Key, Count = c.Count() })
-				.OrderByDescending(c => c.Count);
 
+			var dict = new Dictionary<string, int>();
 
-			int index = 0; this.TopNoun = string.Empty;
-			StringBuilder noun_text = new StringBuilder();
-			foreach (var noun_item in nounGroup)
+			foreach (var noun_tmp in noun)
 			{
-				noun_text.Append(noun_item.Noun.ToString() + string.Format("({0}) ", noun_item.Count));
-
-				if (index == 0)
-					this.TopNoun = noun_item.Noun;
-
-				index++;
-
+				if (dict.ContainsKey(noun_tmp))
+					dict[noun_tmp]++;
+				else
+					dict[noun_tmp] = 1;
 			}
 
-			this.TopNounAll = noun_text.ToString();
+			List<KeyValuePair<string, int>> ret = new List<KeyValuePair<string, int>>();
 
+			ret = (from x in dict
+				   orderby x.Value descending
+				  select x).ToList<KeyValuePair<string, int>>();
+
+			_NounRank = ret;
+
+
+			NotifyPropertyChanged("TopNounAll");
+			NotifyPropertyChanged("TopNoun");
+
+		}
+
+		public string GetCategory(List<KeyValuePair<string, int>> category_list)
+		{
+
+			foreach (var tmp in category_list)
+			{
+				var category = (from x in this._NounRank
+								where x.Key.Equals(tmp.Key)
+								select x);
+
+				if (category.Count() > 0)
+					return category.ElementAt(0).Key + "(" + category.ElementAt(0).Value + ")";
+			}
+
+			return string.Empty;
 		}
 
 	}
