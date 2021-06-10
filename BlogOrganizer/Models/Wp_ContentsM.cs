@@ -87,6 +87,30 @@ namespace BlogOrganizer.Models
 		}
 		#endregion
 
+		#region 名詞・使用順リスト[TopNounAll]プロパティ
+		/// <summary>
+		/// 名詞・使用順リスト[TopNounAll]プロパティ用変数
+		/// </summary>
+		string _TopNounAll = string.Empty;
+		/// <summary>
+		/// 名詞・使用順リスト[TopNounAll]プロパティ
+		/// </summary>
+		public string TopNounAll
+		{
+			get
+			{
+				return _TopNounAll;
+			}
+			set
+			{
+				if (!_TopNounAll.Equals(value))
+				{
+					_TopNounAll = value;
+					NotifyPropertyChanged("TopNounAll");
+				}
+			}
+		}
+		#endregion
 
 		#region [ID]プロパティ
 		/// <summary>
@@ -795,9 +819,12 @@ namespace BlogOrganizer.Models
 		}
 		#endregion
 
-
+		/// <summary>
+		/// MeCabを使用した処理
+		/// </summary>
 		public void UseMecab()
         {
+			MeCabParam mp = new MeCabParam();
 			var tagger = MeCabTagger.Create();
 			this.MeCabItems.Items.Clear();
 			List<string> noun = new List<string>();
@@ -811,25 +838,31 @@ namespace BlogOrganizer.Models
 					var tmp = node.Feature.Split(",");
 
 
-					if (tmp.ElementAt(0).Equals("名詞"))
+					if (tmp.ElementAt(0).Equals("名詞") && tmp.ElementAt(1).Equals("一般"))
                     {
 						noun.Add(node.Surface);
                     }
-
-
                 }
 			}
 			var nounGroup = noun.GroupBy(c => c)
 				.Select(c => new { Noun = c.Key, Count = c.Count() })
 				.OrderByDescending(c => c.Count);
 
+
+			int index = 0; this.TopNoun = string.Empty;
 			StringBuilder noun_text = new StringBuilder();
 			foreach (var noun_item in nounGroup)
 			{
 				noun_text.Append(noun_item.Noun.ToString() + string.Format("({0}) ", noun_item.Count));
+
+				if (index == 0)
+					this.TopNoun = noun_item.Noun;
+
+				index++;
+
 			}
 
-			this.TopNoun = noun_text.ToString();
+			this.TopNounAll = noun_text.ToString();
 
 		}
 

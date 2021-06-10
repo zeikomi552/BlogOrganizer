@@ -31,6 +31,13 @@
                     </b:EventTrigger>
                 </b:Interaction.Triggers>
             </Button>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center" Text="名詞数 / 行数 -> "/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding NounNum}"/>
+                <TextBlock VerticalAlignment="Center" Text=" / "/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding RowNum}"/>
+            </StackPanel>
         </StackPanel>
 
         <Grid Margin="5" Grid.Row="1">

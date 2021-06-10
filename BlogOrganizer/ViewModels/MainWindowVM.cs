@@ -13,6 +13,57 @@ namespace BlogOrganizer.ViewModels
 {
     public class MainWindowVM : ViewModelBase
     {
+        #region 全行数[RowNum]プロパティ
+        /// <summary>
+        /// 全行数[RowNum]プロパティ用変数
+        /// </summary>
+        int _RowNum = 0;
+        /// <summary>
+        /// 全行数[RowNum]プロパティ
+        /// </summary>
+        public int RowNum
+        {
+            get
+            {
+                return _RowNum;
+            }
+            set
+            {
+                if (!_RowNum.Equals(value))
+                {
+                    _RowNum = value;
+                    NotifyPropertyChanged("RowNum");
+                }
+            }
+        }
+        #endregion
+
+        #region 名詞数[NounNum]プロパティ
+        /// <summary>
+        /// 名詞数[NounNum]プロパティ用変数
+        /// </summary>
+        int _NounNum = 0;
+        /// <summary>
+        /// 名詞数[NounNum]プロパティ
+        /// </summary>
+        public int NounNum
+        {
+            get
+            {
+                return _NounNum;
+            }
+            set
+            {
+                if (!_NounNum.Equals(value))
+                {
+                    _NounNum = value;
+                    NotifyPropertyChanged("NounNum");
+                }
+            }
+        }
+        #endregion
+
+
         public override void Init(object sender, EventArgs e)
         {
             //throw new NotImplementedException();
@@ -141,6 +192,10 @@ namespace BlogOrganizer.ViewModels
                         }
                     }
                 }
+
+                this.RowNum = this.BlogElement.WpContents.Items.Count;
+                this.NounNum = (from x in this.BlogElement.WpContents.Items
+                               select x.TopNoun).Distinct().Count();
             }
             catch (Exception e)
             {
