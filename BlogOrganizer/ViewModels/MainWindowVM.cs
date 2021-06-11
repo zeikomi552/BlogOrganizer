@@ -181,14 +181,11 @@ namespace BlogOrganizer.ViewModels
         {
             try
             {
-
                 // ダイアログのインスタンスを生成
                 var dialog = new OpenFileDialog();
 
                 // ファイルの種類を設定
                 dialog.Filter = "テキストファイル (*.sql)|*.sql";
-
-
 
                 // ダイアログを表示する
                 if (dialog.ShowDialog() == true)
@@ -234,6 +231,18 @@ namespace BlogOrganizer.ViewModels
             }
         }
         #endregion
+
+        public void CategoryAnalySys()
+        {
+            try
+            {
+
+            }
+            catch (Exception e)
+            {
+                ShowMessage.ShowErrorOK(e.Message, "Error");
+            }
+        }
 
         public void SetCategory()
         {

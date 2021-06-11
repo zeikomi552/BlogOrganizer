@@ -36,6 +36,41 @@ namespace BlogOrganizer.Models
 		}
 		#endregion
 
+		#region 全記事を1つにまとめたもの[AllContents]プロパティ
+		/// <summary>
+		/// 全記事を1つにまとめたもの[AllContents]プロパティ用変数
+		/// </summary>
+		string _AllContents = string.Empty;
+		/// <summary>
+		/// 全記事を1つにまとめたもの[AllContents]プロパティ
+		/// </summary>
+		public string AllContents
+		{
+			get
+			{
+				return _AllContents;
+			}
+			set
+			{
+				if (!_AllContents.Equals(value))
+				{
+					_AllContents = value;
+					NotifyPropertyChanged("AllContents");
+				}
+			}
+		}
+		#endregion
+
+		#region 全記事を連結して一つにする
+		/// <summary>
+		/// 全記事を連結して一つにする
+		/// </summary>
+		public void ConbineAllContents()
+		{
+			this.AllContents = this.GetAllContents();
+		}
+		#endregion
+
 		#region 全記事の取得処理
 		/// <summary>
 		/// 全記事の取得処理

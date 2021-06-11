@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BlogOrganizer.Models
 {
-    public class Wp_ContentsM : ModelBase
+	public class Wp_ContentsM : ModelBase
 	{
 
 		#region Insert文の1要素分お挿入句の全文[FullText]プロパティ
@@ -70,14 +70,7 @@ namespace BlogOrganizer.Models
 		{
 			get
 			{
-				if (this._NounRank.Count > 0)
-				{
-					return this._NounRank.ElementAt(0).Key;
-				}
-				else
-				{
-					return string.Empty;
-				}
+				return GetTopNoun(1);
 			}
 		}
 		#endregion
@@ -90,17 +83,45 @@ namespace BlogOrganizer.Models
 		{
 			get
 			{
-				StringBuilder txt = new StringBuilder();
-				foreach (var tmp in this._NounRank)
-				{
-					txt.Append(string.Format("{0}({1}) ", tmp.Key, tmp.Value));
-				}
-
-				return txt.ToString();
+				return GetTopNoun(-1);
 			}
 		}
 		#endregion
 
+		#region 名詞・使用順リスト[Top5Noun]プロパティ
+		/// <summary>
+		/// 名詞・使用順リスト[Top5Noun]プロパティ
+		/// </summary>
+		public string Top5Noun
+		{
+			get
+			{
+				return GetTopNoun(5);
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// TopXの記事毎の名詞を取得する
+		/// </summary>
+		/// <param name="top_max">TopXのXを指定する -1は全て</param>
+		/// <returns>TopXの名詞の文字列</returns>
+		public string GetTopNoun(int top_max)
+		{
+			StringBuilder txt = new StringBuilder();
+			int index = 0;
+			foreach (var tmp in this._NounRank)
+			{
+				if (top_max > 0 && index >= top_max)
+					break;
+
+				txt.Append(string.Format("{0}({1}) ", tmp.Key, tmp.Value));
+
+				index++;
+			}
+
+			return txt.ToString();
+		}
 		#region カテゴリ[Category]プロパティ
 		/// <summary>
 		/// カテゴリ[Category]プロパティ用変数
@@ -722,10 +743,25 @@ namespace BlogOrganizer.Models
 				{
 					_Post_content_View = value;
 					NotifyPropertyChanged("Post_content_View");
+					NotifyPropertyChanged("TextCount");
 				}
 			}
 		}
 		#endregion
+
+		#region テキスト文字数
+		/// <summary>
+		/// テキスト文字数
+		/// </summary>
+		public int TextCount
+		{
+			get
+			{
+				return this.Post_content_View.Length;
+			}
+		}
+		#endregion
+
 
 
 		List<KeyValuePair<string, int>> _NounRank = new List<KeyValuePair<string, int>>();
@@ -777,6 +813,7 @@ namespace BlogOrganizer.Models
 
 			NotifyPropertyChanged("TopNounAll");
 			NotifyPropertyChanged("TopNoun");
+			NotifyPropertyChanged("Top5Noun");
 
 		}
 
