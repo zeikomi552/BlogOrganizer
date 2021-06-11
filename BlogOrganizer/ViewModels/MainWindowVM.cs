@@ -148,7 +148,30 @@ namespace BlogOrganizer.ViewModels
         }
         #endregion
 
-        List<KeyValuePair<string, int>> _AllRank = new List<KeyValuePair<string, int>>();
+        #region カテゴリリスト[Categorys]プロパティ
+        /// <summary>
+        /// カテゴリリスト[Categorys]プロパティ用変数
+        /// </summary>
+        ModelList<CategoryM> _Categorys = new ModelList<CategoryM>();
+        /// <summary>
+        /// カテゴリリスト[Categorys]プロパティ
+        /// </summary>
+        public ModelList<CategoryM> Categorys
+        {
+            get
+            {
+                return _Categorys;
+            }
+            set
+            {
+                if (_Categorys == null || !_Categorys.Equals(value))
+                {
+                    _Categorys = value;
+                    NotifyPropertyChanged("Categorys");
+                }
+            }
+        }
+        #endregion
 
         #region ファイルを開く処理
         /// <summary>
@@ -189,13 +212,21 @@ namespace BlogOrganizer.ViewModels
                 // MeCabで各記事を形態素解析
                 this.BlogElement.AnalysisMeCab();
 
-                this._AllRank = this.BlogElement.GetNounRank();
+                var noun_rank = this.BlogElement.GetNounRank();
+
+                ModelList<CategoryM> tmp_cate = new ModelList<CategoryM>();
+                foreach (var tmp in noun_rank)
+                {
+                    CategoryM cate = new CategoryM();
+                    cate.Noun = tmp.Key;
+                    cate.Count = tmp.Value;
+                    tmp_cate.Items.Add(cate);
+                }
+                this.Categorys = tmp_cate;
 
                 this.RowNum = this.BlogElement.WpContents.Items.Count;
                 this.NounNum = (from x in this.BlogElement.WpContents.Items
                                select x.TopNoun).Distinct().Count();
-
-                SetCategory();
             }
             catch (Exception e)
             {
@@ -208,7 +239,7 @@ namespace BlogOrganizer.ViewModels
         {
             foreach (var tmp in this.BlogElement.WpContents.Items)
             {
-                var cate = tmp.GetCategory(this._AllRank);
+                var cate = tmp.GetCategory(this.Categorys);
 
                 tmp.Category = cate;
             }

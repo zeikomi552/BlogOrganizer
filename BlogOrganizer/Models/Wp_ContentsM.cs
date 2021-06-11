@@ -780,20 +780,35 @@ namespace BlogOrganizer.Models
 
 		}
 
-		public string GetCategory(List<KeyValuePair<string, int>> category_list)
+		public string GetCategory(ModelList<CategoryM> category_list)
 		{
-
+			List<KeyValuePair<string, int>> rank_list = new List<KeyValuePair<string, int>>();
 			foreach (var tmp in category_list)
 			{
 				var category = (from x in this._NounRank
-								where x.Key.Equals(tmp.Key)
+								where x.Key.Equals(tmp.Noun)
 								select x);
 
 				if (category.Count() > 0)
-					return category.ElementAt(0).Key + "(" + category.ElementAt(0).Value + ")";
+				{
+					if (tmp.IsSelected)
+					{
+						rank_list.AddRange(category);
+					}
+				}
 			}
 
-			return string.Empty;
+			var sort_rank = (from x in rank_list
+			 orderby x.Value descending
+			 select x);
+
+			StringBuilder ret = new StringBuilder();
+			foreach (var tmp in sort_rank)
+			{
+				ret.Append(tmp.Key + "(" + tmp.Value + ") ");
+			}
+
+			return ret.ToString();
 		}
 
 	}
