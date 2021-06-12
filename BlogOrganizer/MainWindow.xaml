@@ -24,6 +24,18 @@
                     </b:EventTrigger>
                 </b:Interaction.Triggers>
             </Button>
+            <CheckBox Margin="5" Content="カンマor(数)" VerticalAlignment="Center" IsChecked="{Binding ArticleNounDelimita}"/>
+            <Button Margin="5" VerticalAlignment="Center" Content="タグセット">
+                <b:Interaction.Triggers>
+                    <b:EventTrigger EventName="Click">
+                        <b:CallMethodAction TargetObject="{Binding}" MethodName="SetArticleTags"/>
+                    </b:EventTrigger>
+                </b:Interaction.Triggers>
+            </Button>
+
+            <TextBlock Margin="5" VerticalAlignment="Center" Text="各記事の表示カテゴリ数(0:全て):"/>
+            <TextBox Margin="5" Width="50" VerticalAlignment="Center" Text="{Binding CategoryTop}"/>
+            <CheckBox Margin="5" Content="数量表示" VerticalAlignment="Center" IsChecked="{Binding CountDisplay}"/>
             <Button Margin="5" Content="カテゴリセット">
                 <b:Interaction.Triggers>
                     <b:EventTrigger EventName="Click">
@@ -39,54 +51,79 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <DataGrid Margin="5" AutoGenerateColumns="False" ItemsSource="{Binding Categorys.Items}">
-                <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Header="選択" Binding="{Binding IsSelected}"/>
-                    <DataGridTextColumn Header="カテゴリ" Binding="{Binding Noun}"/>
-                    <DataGridTextColumn Header="カウント" Binding="{Binding Count}"/>
-                </DataGrid.Columns>
-                
-            </DataGrid>
+            <GroupBox Header="全記事情報">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <DataGrid Margin="5" AutoGenerateColumns="False" ItemsSource="{Binding Categorys.Items}">
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn Header="選択" Binding="{Binding IsSelected}"/>
+                            <DataGridTextColumn Header="カテゴリ" Binding="{Binding Noun}"/>
+                            <DataGridTextColumn Header="カウント" Binding="{Binding Count}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Margin="5" HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Text="行数 -> "/>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding CategoryRowCount}"/>
+                    </StackPanel>
+
+                </Grid>
+            </GroupBox>
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="auto"/>
-                    </Grid.RowDefinitions>
-                    <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding BlogElement.WpContents.Items}"
+                <GroupBox Header="各記事情報">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <DataGrid IsReadOnly="True" AutoGenerateColumns="False" ItemsSource="{Binding BlogElement.WpContents.Items}"
                       SelectedItem="{Binding BlogElement.WpContents.SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                       Margin="5">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding ID}"/>
-                            <DataGridTextColumn Header="タイトル" Binding="{Binding Post_title}"/>
-                            <DataGridTextColumn Header="修正日" Binding="{Binding Post_modified}"/>
-                            <DataGridTextColumn Header="カテゴリ" Binding="{Binding Category}"/>
-                            <DataGridTextColumn Header="タグ" Binding="{Binding Top5Noun}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <StackPanel Margin="5" HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
-                        <TextBlock VerticalAlignment="Center" Text="行数 -> "/>
-                        <TextBlock VerticalAlignment="Center" Text="{Binding RowNum}"/>
-                    </StackPanel>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID" Binding="{Binding ID}"/>
+                                <DataGridTextColumn Header="タイトル" Binding="{Binding Post_title}"/>
+                                <DataGridTextColumn Header="修正日" Binding="{Binding Post_modified}"/>
+                                <DataGridTextColumn Header="カテゴリ" Binding="{Binding Category}"/>
+                                <DataGridTextColumn Header="Top5 タグ" Binding="{Binding Top5Noun}"/>
+                                <DataGridTextColumn Header="All タグ" Binding="{Binding TopNounAll}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel Margin="5" HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
+                            <StackPanel Margin="5,0" Orientation="Horizontal">
+                                <TextBlock VerticalAlignment="Center" Text="頻出タグ数 -> "/>
+                                <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.TopNounCount}"/>
+                            </StackPanel>
+                            <StackPanel Margin="5,0" Orientation="Horizontal">
+                                <TextBlock VerticalAlignment="Center" Text="カテゴリセット数/全記事数 -> "/>
+                                <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.CategoryCount}"/>
+                                <TextBlock VerticalAlignment="Center" Text="/"/>
+                                <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.ContentsCount}"/>
+                            </StackPanel>
+                        </StackPanel>
 
-                </Grid>
-                <Grid Grid.Row="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="auto"/>
-                    </Grid.RowDefinitions>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="記事内容" Grid.Row="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
 
-                    <TextBox TextWrapping="Wrap" IsReadOnly="True" Margin="5" Text="{Binding BlogElement.WpContents.SelectedItem.Post_content_View}"/>
-                    <StackPanel Margin="5" HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
-                        <TextBlock VerticalAlignment="Center" Text="文字数 -> "/>
-                        <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.WpContents.SelectedItem.TextCount}"/>
-                    </StackPanel>
-                </Grid>
+                        <TextBox TextWrapping="Wrap" IsReadOnly="True" Margin="5" Text="{Binding BlogElement.WpContents.SelectedItem.Post_content_View}"/>
+                        <StackPanel Margin="5" HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center" Text="文字数 -> "/>
+                            <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.WpContents.SelectedItem.TextCount}"/>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
             </Grid>
 
 

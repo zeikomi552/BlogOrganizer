@@ -13,6 +13,31 @@ namespace BlogOrganizer.ViewModels
 {
     public class MainWindowVM : ViewModelBase
     {
+        #region 数量表示[CountDisplay]プロパティ
+        /// <summary>
+        /// 数量表示[CountDisplay]プロパティ用変数
+        /// </summary>
+        bool _CountDisplay = false;
+        /// <summary>
+        /// 数量表示[CountDisplay]プロパティ
+        /// </summary>
+        public bool CountDisplay
+        {
+            get
+            {
+                return _CountDisplay;
+            }
+            set
+            {
+                if (!_CountDisplay.Equals(value))
+                {
+                    _CountDisplay = value;
+                    NotifyPropertyChanged("CountDisplay");
+                }
+            }
+        }
+        #endregion
+
         #region 全行数[RowNum]プロパティ
         /// <summary>
         /// 全行数[RowNum]プロパティ用変数
@@ -62,6 +87,32 @@ namespace BlogOrganizer.ViewModels
             }
         }
         #endregion
+
+        #region カテゴリTopXの指定数[CategoryTop]プロパティ
+        /// <summary>
+        /// カテゴリTopXの指定数[CategoryTop]プロパティ用変数
+        /// </summary>
+        int _CategoryTop = 1;
+        /// <summary>
+        /// カテゴリTopXの指定数[CategoryTop]プロパティ
+        /// </summary>
+        public int CategoryTop
+        {
+            get
+            {
+                return _CategoryTop;
+            }
+            set
+            {
+                if (!_CategoryTop.Equals(value))
+                {
+                    _CategoryTop = value;
+                    NotifyPropertyChanged("CategoryTop");
+                }
+            }
+        }
+        #endregion
+
 
         #region 初期化処理
         /// <summary>
@@ -168,6 +219,45 @@ namespace BlogOrganizer.ViewModels
                 {
                     _Categorys = value;
                     NotifyPropertyChanged("Categorys");
+                    NotifyPropertyChanged("CategoryRowCount");
+                }
+            }
+        }
+        #endregion
+
+        #region [CategoryRowCount]プロパティ
+        /// <summary>
+        /// [CategoryRowCount]プロパティ
+        /// </summary>
+        public int CategoryRowCount
+        {
+            get
+            {
+                return this.Categorys.Items.Count;
+            }
+        }
+        #endregion
+
+        #region 各記事のタグの区切り文字(true:カンマ false(数))[ArticleNounDelimita]プロパティ
+        /// <summary>
+        /// 各記事のタグの区切り文字(true:カンマ false(数))[ArticleNounDelimita]プロパティ用変数
+        /// </summary>
+        bool _ArticleNounDelimita = false;
+        /// <summary>
+        /// 各記事のタグの区切り文字(true:カンマ false(数))[ArticleNounDelimita]プロパティ
+        /// </summary>
+        public bool ArticleNounDelimita
+        {
+            get
+            {
+                return _ArticleNounDelimita;
+            }
+            set
+            {
+                if (!_ArticleNounDelimita.Equals(value))
+                {
+                    _ArticleNounDelimita = value;
+                    NotifyPropertyChanged("ArticleNounDelimita");
                 }
             }
         }
@@ -206,9 +296,6 @@ namespace BlogOrganizer.ViewModels
                     }
                 }
 
-                // MeCabで各記事を形態素解析
-                this.BlogElement.AnalysisMeCab();
-
                 var noun_rank = this.BlogElement.GetNounRank();
 
                 ModelList<CategoryM> tmp_cate = new ModelList<CategoryM>();
@@ -221,9 +308,8 @@ namespace BlogOrganizer.ViewModels
                 }
                 this.Categorys = tmp_cate;
 
-                this.RowNum = this.BlogElement.WpContents.Items.Count;
-                this.NounNum = (from x in this.BlogElement.WpContents.Items
-                               select x.TopNoun).Distinct().Count();
+                this.BlogElement.SetContentsCount();
+                this.BlogElement.SetCategoryCount();
             }
             catch (Exception e)
             {
@@ -232,28 +318,40 @@ namespace BlogOrganizer.ViewModels
         }
         #endregion
 
-        public void CategoryAnalySys()
+        #region タグセット
+        /// <summary>
+        /// タグセット
+        /// </summary>
+        public void SetArticleTags()
         {
             try
             {
-
+                // MeCabで各記事を形態素解析
+                this.BlogElement.AnalysisMeCab(this.ArticleNounDelimita);
             }
             catch (Exception e)
             {
                 ShowMessage.ShowErrorOK(e.Message, "Error");
             }
         }
+        #endregion
 
+        #region カテゴリのセット
+        /// <summary>
+        /// カテゴリのセット
+        /// </summary>
         public void SetCategory()
         {
+
             foreach (var tmp in this.BlogElement.WpContents.Items)
             {
-                var cate = tmp.GetCategory(this.Categorys);
-
+                var cate = tmp.GetCategory(this.Categorys, this.CategoryTop, this.CountDisplay);
                 tmp.Category = cate;
             }
 
+            this.BlogElement.SetCategoryCount();
         }
+        #endregion
 
     }
 }

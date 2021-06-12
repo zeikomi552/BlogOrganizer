@@ -102,12 +102,13 @@ namespace BlogOrganizer.Models
 		/// <summary>
 		/// 各記事の形態素解析
 		/// </summary>
-		public void AnalysisMeCab()
+		public void AnalysisMeCab(bool delimita)
 		{
-			foreach(var tmp in this.WpContents)
-            {
+			foreach (var tmp in this.WpContents)
+			{
+				tmp.SetTopDeilimita(delimita);
 				tmp.UseMecab();
-            }
+			}
 		}
 
 		#region MeCabの解析結果[MeCabItems]プロパティ
@@ -199,6 +200,116 @@ namespace BlogOrganizer.Models
 			return ret;
 		}
 		#endregion
+
+		#region カテゴリ設定数のセット
+		/// <summary>
+		/// カテゴリ設定数のセット
+		/// </summary>
+		public void SetCategoryCount()
+		{
+			int count = 0;
+			foreach (var tmp in this.WpContents.Items)
+			{
+				if (!string.IsNullOrEmpty(tmp.Category))
+				{
+					count++;
+				}
+			}
+			this.CategoryCount = count;
+		}
+		#endregion
+
+		#region 未分類数
+		/// <summary>
+		/// 未分類数
+		/// </summary>
+		public int NoCategory
+        {
+			get
+			{
+				return this.ContentsCount - this.CategoryCount;
+			}
+		}
+		#endregion
+
+		#region トップの名詞カウント(重複なし）[TopNounCount]プロパティ
+		/// <summary>
+		/// トップの名詞カウント(重複なし）[TopNounCount]プロパティ
+		/// </summary>
+		public int TopNounCount
+		{
+			get
+			{
+				return (from x in this.WpContents.Items
+						select x.TopNoun).Distinct().Count();
+			}
+
+		}
+		#endregion
+
+		#region カテゴリ設定数[CategoryCount]プロパティ
+		/// <summary>
+		/// カテゴリ設定数[CategoryCount]プロパティ用変数
+		/// </summary>
+		int _CategoryCount = 0;
+		/// <summary>
+		/// カテゴリ設定数[CategoryCount]プロパティ
+		/// </summary>
+		public int CategoryCount
+		{
+			get
+			{
+				return _CategoryCount;
+			}
+			set
+			{
+				if (!_CategoryCount.Equals(value))
+				{
+					_CategoryCount = value;
+					NotifyPropertyChanged("CategoryCount");
+					NotifyPropertyChanged("NoCategory");
+				}
+			}
+		}
+		#endregion
+
+		#region コンテンツ数のセット
+		/// <summary>
+		/// コンテンツ数のセット
+		/// </summary>
+		public void SetContentsCount()
+		{
+			this.ContentsCount = this.WpContents.Items.Count;
+		}
+		#endregion
+
+		#region 記事数[ContentsCount]プロパティ
+		/// <summary>
+		/// 記事数[ContentsCount]プロパティ用変数
+		/// </summary>
+		int _ContentsCount = 0;
+		/// <summary>
+		/// 記事数[ContentsCount]プロパティ
+		/// </summary>
+		public int ContentsCount
+		{
+			get
+			{
+				return _ContentsCount;
+			}
+			set
+			{
+				if (!_ContentsCount.Equals(value))
+				{
+					_ContentsCount = value;
+					NotifyPropertyChanged("ContentsCount");
+					NotifyPropertyChanged("NoCategory");
+					NotifyPropertyChanged("TopNounCount");
+				}
+			}
+		}
+		#endregion
+
 
 	}
 }

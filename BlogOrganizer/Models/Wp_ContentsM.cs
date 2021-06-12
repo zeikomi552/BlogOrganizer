@@ -115,7 +115,14 @@ namespace BlogOrganizer.Models
 				if (top_max > 0 && index >= top_max)
 					break;
 
-				txt.Append(string.Format("{0}({1}) ", tmp.Key, tmp.Value));
+				if (this._CommaF)
+				{
+					txt.Append(string.Format("{0}({1}) ", tmp.Key, tmp.Value));
+				}
+				else
+				{
+					txt.Append(string.Format("{0}, ", tmp.Key, tmp.Value));
+				}
 
 				index++;
 			}
@@ -146,6 +153,16 @@ namespace BlogOrganizer.Models
 			}
 		}
 		#endregion
+
+
+		private bool _CommaF = false;
+		/// <summary>
+		/// 頻出名詞をカンマで区切るか(数)で表示するかを指定する
+		/// </summary>
+		public void SetTopDeilimita(bool comma_f)
+		{
+			this._CommaF = comma_f;
+		}
 
 
 		#region [ID]プロパティ
@@ -817,36 +834,67 @@ namespace BlogOrganizer.Models
 
 		}
 
-		public string GetCategory(ModelList<CategoryM> category_list)
+		#region カテゴリの取得処理
+		/// <summary>
+		/// カテゴリの取得処理
+		/// </summary>
+		/// <param name="category_list">カテゴリリスト</param>
+		/// <param name="category_top_n">表示するカテゴリ上位N件(0は全て)</param>
+		/// <param name="count_display">出現頻度を表示するかどうか</param>
+		/// <returns>カテゴリ文字列</returns>
+		public string GetCategory(ModelList<CategoryM> category_list, int category_top_n, bool count_display)
 		{
 			List<KeyValuePair<string, int>> rank_list = new List<KeyValuePair<string, int>>();
 			foreach (var tmp in category_list)
 			{
+				// カテゴリの選択にチェックが入っていない
+				if (!tmp.IsSelected)
+					continue;
+
+				// 名詞ランキング
 				var category = (from x in this._NounRank
 								where x.Key.Equals(tmp.Noun)
 								select x);
 
 				if (category.Count() > 0)
 				{
-					if (tmp.IsSelected)
-					{
-						rank_list.AddRange(category);
-					}
+					rank_list.AddRange(category);
 				}
 			}
 
+			// 出現頻度降順に並べか
 			var sort_rank = (from x in rank_list
-			 orderby x.Value descending
-			 select x);
+							 orderby x.Value descending
+							 select x);
 
+
+			int index = 0;
 			StringBuilder ret = new StringBuilder();
 			foreach (var tmp in sort_rank)
 			{
-				ret.Append(tmp.Key + "(" + tmp.Value + ") ");
+				// カテゴリ数が指定されている場合
+				if (category_top_n > 0 && index >= category_top_n)
+				{
+					break;
+				}
+				// 出現頻度の表示
+				if (count_display)
+				{
+					// 名詞(頻度)
+					ret.Append(tmp.Key + "(" + tmp.Value + ") ");
+				}
+				else
+				{
+					// 名詞
+					ret.Append(tmp.Key + " ");
+				}
+
+				index++;
 			}
 
 			return ret.ToString();
 		}
+		#endregion
 
 	}
 }
