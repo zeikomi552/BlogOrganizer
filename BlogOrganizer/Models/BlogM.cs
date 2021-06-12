@@ -310,6 +310,26 @@ namespace BlogOrganizer.Models
 		}
 		#endregion
 
+		#region 全記事からカテゴリリストを抽出する
+		/// <summary>
+		/// 全記事からカテゴリリストを抽出する
+		/// </summary>
+		/// <returns>カテゴリリスト</returns>
+		public ModelList<CategoryM> GetCategorys()
+		{
+			var noun_rank = this.GetNounRank();
 
+			ModelList<CategoryM> tmp_cate = new ModelList<CategoryM>();
+			foreach (var tmp in noun_rank)
+			{
+				CategoryM cate = new CategoryM();
+				cate.Noun = tmp.Key;
+				cate.Count = tmp.Value;
+				tmp_cate.Items.Add(cate);
+			}
+
+			return tmp_cate;
+		}
+		#endregion
 	}
 }

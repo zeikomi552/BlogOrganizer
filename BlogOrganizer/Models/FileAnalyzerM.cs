@@ -66,11 +66,9 @@ namespace BlogOrganizer.Models
 
 			ret.FullText = full_text;
 
-
 			string match_pattern1 = @"([0-9]+?),";
 			string match_pattern2 = @"('\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d'),";
 			string match_pattern3 = @"('.*?'),";
-
 
 			//Insert文の()内の挿入句をすべて抽出する
 			System.Text.RegularExpressions.MatchCollection mc1 =
@@ -98,7 +96,6 @@ namespace BlogOrganizer.Models
 			ret.Post_modified = tmp_date;
 			DateTime.TryParseExact(mc2.ElementAt(3).ToString().Replace(",", "").Replace("'", ""), "yyyy-MM-dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out tmp_date);
 			ret.Post_modified_gmt = tmp_date;
-
 
 			full_text = full_text.Replace(mc1.ElementAt(0).ToString(), "");
 			full_text = full_text.Replace(mc1.ElementAt(1).ToString(), "");
@@ -134,27 +131,34 @@ namespace BlogOrganizer.Models
 
 			for (int index_tmp = index; index_tmp >= 0; index_tmp--)
 			{
-				ret.Post_content = mc3.ElementAt(index_tmp).ToString().Replace(",", "").Replace("'", "");
+				ret.Post_content += mc3.ElementAt(index_tmp).ToString().Replace(",", "").Replace("'", "");
 			}
 
+			return ret;
+		}
+		#endregion
 
-			string match_pattern4 = "<(\".*?\"|'.*?'|[^'\"])*?>";
+		#region Htmlを取り除く処理
+		/// <summary>
+		/// Htmlを取り除く処理
+		/// </summary>
+		/// <param name="text">記事内容</param>
+		/// <returns>htmlタグを取り除いた結果</returns>
+		public static string ExceptHtmlTags(string text)
+		{
+			string match_pattern = "<(\".*?\"|'.*?'|[^'\"])*?>";
 			//Insert文の()内の挿入句をすべて抽出する
-			System.Text.RegularExpressions.MatchCollection mc4 =
+			System.Text.RegularExpressions.MatchCollection mc =
 				System.Text.RegularExpressions.Regex.Matches(
-				ret.Post_content, match_pattern4);
+				text, match_pattern);
 
-			string tmp_txt = ret.Post_content;
-			foreach (var html_tag in mc4)
+			string tmp_txt = text;
+			foreach (var html_tag in mc)
 			{
 				tmp_txt = tmp_txt.Replace(html_tag.ToString(), "");
 			}
 
-			ret.Post_content_View = tmp_txt;
-
-
-
-			return ret;
+			return tmp_txt;
 		}
 		#endregion
 	}

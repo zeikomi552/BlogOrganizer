@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:BlogOrganizer"
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors" xmlns:ViewModels="clr-namespace:BlogOrganizer.ViewModels" x:Class="BlogOrganizer.MainWindow"
         mc:Ignorable="d"
-        Title="ブログ分析" Height="450" Width="800">
+        Title="ブロタグくん" Height="800" Width="1000">
     <Window.DataContext>
         <ViewModels:MainWindowVM/>
     </Window.DataContext>
@@ -14,36 +14,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <Button Margin="5" VerticalAlignment="Center" Content="ファイル選択">
-                <b:Interaction.Triggers>
-                    <b:EventTrigger EventName="Click">
-                        <b:CallMethodAction TargetObject="{Binding}" MethodName="OpenFile"/>
-                    </b:EventTrigger>
-                </b:Interaction.Triggers>
-            </Button>
-            <CheckBox Margin="5" Content="カンマor(数)" VerticalAlignment="Center" IsChecked="{Binding ArticleNounDelimita}"/>
-            <Button Margin="5" VerticalAlignment="Center" Content="タグセット">
-                <b:Interaction.Triggers>
-                    <b:EventTrigger EventName="Click">
-                        <b:CallMethodAction TargetObject="{Binding}" MethodName="SetArticleTags"/>
-                    </b:EventTrigger>
-                </b:Interaction.Triggers>
-            </Button>
-
-            <TextBlock Margin="5" VerticalAlignment="Center" Text="各記事の表示カテゴリ数(0:全て):"/>
-            <TextBox Margin="5" Width="50" VerticalAlignment="Center" Text="{Binding CategoryTop}"/>
-            <CheckBox Margin="5" Content="数量表示" VerticalAlignment="Center" IsChecked="{Binding CountDisplay}"/>
-            <Button Margin="5" Content="カテゴリセット">
-                <b:Interaction.Triggers>
-                    <b:EventTrigger EventName="Click">
-                        <b:CallMethodAction TargetObject="{Binding}" MethodName="SetCategory"/>
-                    </b:EventTrigger>
-                </b:Interaction.Triggers>
-            </Button>
-        </StackPanel>
 
         <Grid Margin="5" Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -55,6 +28,7 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <DataGrid Margin="5" AutoGenerateColumns="False" ItemsSource="{Binding Categorys.Items}">
@@ -68,6 +42,22 @@
                         <TextBlock VerticalAlignment="Center" Text="行数 -> "/>
                         <TextBlock VerticalAlignment="Center" Text="{Binding CategoryRowCount}"/>
                     </StackPanel>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                        <Button Grid.Column="1" Margin="5" VerticalAlignment="Center" Content="カテゴリ保存">
+                            <b:Interaction.Triggers>
+                                <b:EventTrigger EventName="Click">
+                                    <b:CallMethodAction TargetObject="{Binding}" MethodName="SaveCategory"/>
+                                </b:EventTrigger>
+                            </b:Interaction.Triggers>
+                        </Button>
+                        <Button Grid.Column="2" Margin="5" VerticalAlignment="Center" Content="カテゴリ読込">
+                            <b:Interaction.Triggers>
+                                <b:EventTrigger EventName="Click">
+                                    <b:CallMethodAction TargetObject="{Binding}" MethodName="LoadCagetory"/>
+                                </b:EventTrigger>
+                            </b:Interaction.Triggers>
+                        </Button>
+                    </StackPanel>
 
                 </Grid>
             </GroupBox>
@@ -75,49 +65,145 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-
-                <GroupBox Header="各記事情報">
+                <GroupBox Header="手動追加">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <DataGrid IsReadOnly="True" AutoGenerateColumns="False" ItemsSource="{Binding BlogElement.WpContents.Items}"
-                      SelectedItem="{Binding BlogElement.WpContents.SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                      Margin="5">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="ID" Binding="{Binding ID}"/>
-                                <DataGridTextColumn Header="タイトル" Binding="{Binding Post_title}"/>
-                                <DataGridTextColumn Header="修正日" Binding="{Binding Post_modified}"/>
-                                <DataGridTextColumn Header="カテゴリ" Binding="{Binding Category}"/>
-                                <DataGridTextColumn Header="Top5 タグ" Binding="{Binding Top5Noun}"/>
-                                <DataGridTextColumn Header="All タグ" Binding="{Binding TopNounAll}"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                        <StackPanel Margin="5" HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
-                            <StackPanel Margin="5,0" Orientation="Horizontal">
-                                <TextBlock VerticalAlignment="Center" Text="頻出タグ数 -> "/>
-                                <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.TopNounCount}"/>
-                            </StackPanel>
-                            <StackPanel Margin="5,0" Orientation="Horizontal">
-                                <TextBlock VerticalAlignment="Center" Text="カテゴリセット数/全記事数 -> "/>
-                                <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.CategoryCount}"/>
-                                <TextBlock VerticalAlignment="Center" Text="/"/>
-                                <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.ContentsCount}"/>
-                            </StackPanel>
-                        </StackPanel>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Margin="5" VerticalAlignment="Center" Text="タイトル:"/>
+                            <TextBox Margin="5" VerticalAlignment="Center" Grid.Column="1" Text="{Binding ManualContents.Post_title}"/>
+                        </Grid>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     Text="{Binding ManualContents.Post_content}"/>
+                            <Button Margin="5" Grid.Column="2" Content="記事追加">
+                                <b:Interaction.Triggers>
+                                    <b:EventTrigger EventName="Click">
+                                        <b:CallMethodAction TargetObject="{Binding}" MethodName="AddManualContents"/>
+                                    </b:EventTrigger>
+                                </b:Interaction.Triggers>
+                            </Button>
+                        </Grid>
 
                     </Grid>
+
                 </GroupBox>
-                <GroupBox Header="記事内容" Grid.Row="1">
+
+                <GroupBox Grid.Row="1" Header="各記事情報">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Margin="5" VerticalAlignment="Center" Text="タグ関連:"/>
+                            <CheckBox Margin="5" Content="カンマor(数)" VerticalAlignment="Center" IsChecked="{Binding ArticleNounDelimita}"/>
+
+
+                            <TextBlock Margin="5" VerticalAlignment="Center" Text="各記事の表示カテゴリ数(0:全て):"/>
+                            <TextBox Margin="5" Width="50" VerticalAlignment="Center" Text="{Binding CategoryTop}"/>
+                            <TextBlock Margin="5" VerticalAlignment="Center" Text="カテゴリ関連:"/>
+                            <CheckBox Margin="5" Content="数量表示" VerticalAlignment="Center" IsChecked="{Binding CountDisplay}"/>
+
+                        </StackPanel>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="191*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <DataGrid Grid.Row="1" IsReadOnly="True" AutoGenerateColumns="False" ItemsSource="{Binding BlogElement.WpContents.Items}"
+                              SelectedItem="{Binding BlogElement.WpContents.SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              Margin="5">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding ID}"/>
+                                    <DataGridTextColumn Header="タイトル" Binding="{Binding Post_title}"/>
+                                    <DataGridTextColumn Header="修正日" Binding="{Binding Post_modified}"/>
+                                    <DataGridTextColumn Header="カテゴリ" Binding="{Binding Category}"/>
+                                    <DataGridTextColumn Header="Top5 タグ" Binding="{Binding Top5Noun}"/>
+                                    <DataGridTextColumn Header="All タグ" Binding="{Binding TopNounAll}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Grid.Column="1">
+                                <Button Margin="5" VerticalAlignment="Center" Content="タグセット">
+                                    <b:Interaction.Triggers>
+                                        <b:EventTrigger EventName="Click">
+                                            <b:CallMethodAction TargetObject="{Binding}" MethodName="SetArticleTags"/>
+                                        </b:EventTrigger>
+                                    </b:Interaction.Triggers>
+                                </Button>
+                                <Button Margin="5" Content="カテゴリセット">
+                                    <b:Interaction.Triggers>
+                                        <b:EventTrigger EventName="Click">
+                                            <b:CallMethodAction TargetObject="{Binding}" MethodName="SetCategory"/>
+                                        </b:EventTrigger>
+                                    </b:Interaction.Triggers>
+                                </Button>
+                                <Button Margin="5" Content="記事保存">
+                                    <b:Interaction.Triggers>
+                                        <b:EventTrigger EventName="Click">
+                                            <b:CallMethodAction TargetObject="{Binding}" MethodName="SaveArticles"/>
+                                        </b:EventTrigger>
+                                    </b:Interaction.Triggers>
+                                </Button>
+                                <Button Margin="5" Content="記事読込">
+                                    <b:Interaction.Triggers>
+                                        <b:EventTrigger EventName="Click">
+                                            <b:CallMethodAction TargetObject="{Binding}" MethodName="LoadArticles"/>
+                                        </b:EventTrigger>
+                                    </b:Interaction.Triggers>
+                                </Button>
+                                <Button Margin="5" Content="カテゴリ作成">
+                                    <b:Interaction.Triggers>
+                                        <b:EventTrigger EventName="Click">
+                                            <b:CallMethodAction TargetObject="{Binding}" MethodName="CreateCategory"/>
+                                        </b:EventTrigger>
+                                    </b:Interaction.Triggers>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel Margin="5" Grid.Row="2">
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel Margin="5,0" Orientation="Horizontal">
+                                    <TextBlock VerticalAlignment="Center" Text="頻出タグ数 -> "/>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.TopNounCount}"/>
+                                </StackPanel>
+                                <StackPanel Margin="5,0" Orientation="Horizontal">
+                                    <TextBlock VerticalAlignment="Center" Text="カテゴリセット数/全記事数 -> "/>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.CategoryCount}"/>
+                                    <TextBlock VerticalAlignment="Center" Text="/"/>
+                                    <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.ContentsCount}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Grid.Row="2" Header="記事内容">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
 
-                        <TextBox TextWrapping="Wrap" IsReadOnly="True" Margin="5" Text="{Binding BlogElement.WpContents.SelectedItem.Post_content_View}"/>
+                        <TextBox ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                 TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" Margin="5" Text="{Binding BlogElement.WpContents.SelectedItem.Post_content_View}"/>
                         <StackPanel Margin="5" HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
                             <TextBlock VerticalAlignment="Center" Text="文字数 -> "/>
                             <TextBlock VerticalAlignment="Center" Text="{Binding BlogElement.WpContents.SelectedItem.TextCount}"/>
@@ -125,8 +211,22 @@
                     </Grid>
                 </GroupBox>
             </Grid>
+        </Grid>
 
-
+        <Grid Grid.Row="2" Background="AliceBlue">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="613*"/>
+            </Grid.ColumnDefinitions>
+            <Button Margin="5,0,5,0" VerticalAlignment="Center" Content="ﾊﾞｯｸｱｯﾌﾟ選択">
+                <b:Interaction.Triggers>
+                    <b:EventTrigger EventName="Click">
+                        <b:CallMethodAction TargetObject="{Binding}" MethodName="OpenFile"/>
+                    </b:EventTrigger>
+                </b:Interaction.Triggers>
+            </Button>
 
         </Grid>
 

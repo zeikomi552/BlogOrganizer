@@ -13,6 +13,32 @@ namespace BlogOrganizer.ViewModels
 {
     public class MainWindowVM : ViewModelBase
     {
+        #region 手動操作用の記事[ManualContents]プロパティ
+        /// <summary>
+        /// 手動操作用の記事[ManualContents]プロパティ用変数
+        /// </summary>
+        Wp_ContentsM _ManualContents = new Wp_ContentsM();
+        /// <summary>
+        /// 手動操作用の記事[ManualContents]プロパティ
+        /// </summary>
+        public Wp_ContentsM ManualContents
+        {
+            get
+            {
+                return _ManualContents;
+            }
+            set
+            {
+                if (_ManualContents == null || !_ManualContents.Equals(value))
+                {
+                    _ManualContents = value;
+                    NotifyPropertyChanged("ManualContents");
+                }
+            }
+        }
+        #endregion
+
+
         #region 数量表示[CountDisplay]プロパティ
         /// <summary>
         /// 数量表示[CountDisplay]プロパティ用変数
@@ -135,6 +161,24 @@ namespace BlogOrganizer.ViewModels
         public override void Close(object sender, EventArgs e)
         {
             //throw new NotImplementedException();   
+        }
+        #endregion
+
+        #region コンテンツの手動入力
+        /// <summary>
+        /// コンテンツの手動入力
+        /// </summary>
+        public void AddManualContents()
+        {
+            try
+            {
+                this.BlogElement.WpContents.Items.Add(this.ManualContents);
+                this.ManualContents = new Wp_ContentsM();
+            }
+            catch (Exception e)
+            {
+                ShowMessage.ShowErrorOK(e.Message, "Error");
+            }
         }
         #endregion
 
@@ -294,22 +338,11 @@ namespace BlogOrganizer.ViewModels
                             this.BlogElement.Add(wp_content);
                         }
                     }
+
+                    // カテゴリの作成処理
+                    CreateCategory();
                 }
 
-                var noun_rank = this.BlogElement.GetNounRank();
-
-                ModelList<CategoryM> tmp_cate = new ModelList<CategoryM>();
-                foreach (var tmp in noun_rank)
-                {
-                    CategoryM cate = new CategoryM();
-                    cate.Noun = tmp.Key;
-                    cate.Count = tmp.Value;
-                    tmp_cate.Items.Add(cate);
-                }
-                this.Categorys = tmp_cate;
-
-                this.BlogElement.SetContentsCount();
-                this.BlogElement.SetCategoryCount();
             }
             catch (Exception e)
             {
@@ -353,5 +386,116 @@ namespace BlogOrganizer.ViewModels
         }
         #endregion
 
+        #region カテゴリの保存処理
+        /// <summary>
+        /// カテゴリの保存処理
+        /// </summary>
+        public void SaveCategory()
+        {
+            try
+            {
+                // ファイル保存ダイアログを生成します。
+                var dialog = new SaveFileDialog();
+
+                // ファイルの種類を設定
+                dialog.Filter = "ブログ解析カテゴリファイル(*.bocate)|*.bocate";
+
+
+                // 保存ボタン以外が押下された場合
+                if (dialog.ShowDialog() == true)
+                {
+                    XMLUtil.Seialize<ModelList<CategoryM>>(dialog.FileName, this.Categorys);
+                }
+            }
+            catch (Exception e)
+            {
+                ShowMessage.ShowErrorOK(e.Message, "Error");
+            }
+        }
+        #endregion
+
+        #region カテゴリの読み込み処理
+        /// <summary>
+        /// カテゴリの読み込み処理
+        /// </summary>
+        public void LoadCagetory()
+        {
+            try
+            {
+                // ダイアログのインスタンスを生成
+                var dialog = new OpenFileDialog();
+
+                // ファイルの種類を設定
+                dialog.Filter = "ブログ解析カテゴリファイル(*.bocate)|*.bocate";
+
+                // ダイアログを表示する
+                if (dialog.ShowDialog() == true)
+                {
+                    this.Categorys = XMLUtil.Deserialize<ModelList<CategoryM>>(dialog.FileName);
+                }
+            }
+            catch (Exception e)
+            {
+                ShowMessage.ShowErrorOK(e.Message, "Error");
+            }
+        }
+        #endregion
+
+        public void SaveArticles()
+        {
+            try
+            {
+                // ファイル保存ダイアログを生成します。
+                var dialog = new SaveFileDialog();
+
+                // ファイルの種類を設定
+                dialog.Filter = "ブログ記事ファイル(*.boart)|*.boart";
+
+
+                // 保存ボタン以外が押下された場合
+                if (dialog.ShowDialog() == true)
+                {
+                    XMLUtil.Seialize<BlogM>(dialog.FileName, this.BlogElement);
+                }
+            }
+            catch (Exception e)
+            {
+                ShowMessage.ShowErrorOK(e.Message, "Error");
+            }
+        }
+
+        public void LoadArticles()
+        {
+            try
+            {
+                // ダイアログのインスタンスを生成
+                var dialog = new OpenFileDialog();
+
+                // ファイルの種類を設定
+                dialog.Filter = "ブログ記事ファイル(*.boart)|*.boart";
+
+                // ダイアログを表示する
+                if (dialog.ShowDialog() == true)
+                {
+                    this.BlogElement = XMLUtil.Deserialize<BlogM>(dialog.FileName);
+                }
+            }
+            catch (Exception e)
+            {
+                ShowMessage.ShowErrorOK(e.Message, "Error");
+            }
+        }
+
+        #region 全記事からカテゴリの作成処理
+        /// <summary>
+        /// 全記事からカテゴリの作成処理
+        /// </summary>
+        public void CreateCategory()
+        {
+            this.Categorys = this.BlogElement.GetCategorys();
+            this.BlogElement.SetContentsCount();
+            this.BlogElement.SetCategoryCount();
+        }
+        #endregion
     }
 }

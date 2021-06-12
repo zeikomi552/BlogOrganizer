@@ -285,6 +285,9 @@ namespace BlogOrganizer.Models
 				{
 					_Post_content = value;
 					NotifyPropertyChanged("Post_content");
+
+					// タグを取り除いた結果をセットする
+					this.Post_content_View = FileAnalyzerM.ExceptHtmlTags(_Post_content);
 				}
 			}
 		}
