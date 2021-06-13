@@ -44,6 +44,7 @@ namespace BlogOrganizer.Models
 		/// <summary>
 		/// MeCabの解析結果[MeCabItems]プロパティ
 		/// </summary>
+		[System.Xml.Serialization.XmlIgnore]
 		public ModelList<MeCab.MeCabNode> MeCabItems
 		{
 			get
@@ -65,6 +66,7 @@ namespace BlogOrganizer.Models
 		/// <summary>
 		/// [TopNoun]プロパティ
 		/// </summary>
+		[System.Xml.Serialization.XmlIgnore]
 		public string TopNoun
 		{
 			get
@@ -78,6 +80,7 @@ namespace BlogOrganizer.Models
 		/// <summary>
 		/// 名詞・使用順リスト[TopNounAll]プロパティ
 		/// </summary>
+		[System.Xml.Serialization.XmlIgnore]
 		public string TopNounAll
 		{
 			get
@@ -91,6 +94,7 @@ namespace BlogOrganizer.Models
 		/// <summary>
 		/// 名詞・使用順リスト[Top5Noun]プロパティ
 		/// </summary>
+		[System.Xml.Serialization.XmlIgnore]
 		public string Top5Noun
 		{
 			get
@@ -772,6 +776,7 @@ namespace BlogOrganizer.Models
 		/// <summary>
 		/// テキスト文字数
 		/// </summary>
+		[System.Xml.Serialization.XmlIgnore]
 		public int TextCount
 		{
 			get

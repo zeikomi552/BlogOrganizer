@@ -135,12 +135,12 @@
                               SelectedItem="{Binding BlogElement.WpContents.SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               Margin="5">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID" Binding="{Binding ID}"/>
+                                    <DataGridTextColumn IsReadOnly="True" Header="ID" Binding="{Binding ID}"/>
                                     <DataGridTextColumn Header="タイトル" Binding="{Binding Post_title}"/>
-                                    <DataGridTextColumn Header="登録日" Binding="{Binding Post_date}"/>
-                                    <DataGridTextColumn Header="カテゴリ" Binding="{Binding Category}"/>
-                                    <DataGridTextColumn Header="Top5 タグ" Binding="{Binding Top5Noun}"/>
-                                    <DataGridTextColumn Header="All タグ" Binding="{Binding TopNounAll}"/>
+                                    <DataGridTextColumn IsReadOnly="True" Header="登録日" Binding="{Binding Post_date}"/>
+                                    <DataGridTextColumn IsReadOnly="True" Header="カテゴリ" Binding="{Binding Category}"/>
+                                    <DataGridTextColumn IsReadOnly="True" Header="Top5 タグ" Binding="{Binding Top5Noun}"/>
+                                    <DataGridTextColumn IsReadOnly="True" Header="All タグ" Binding="{Binding TopNounAll}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Grid.Column="1">
