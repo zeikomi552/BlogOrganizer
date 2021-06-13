@@ -1,4 +1,5 @@
 ﻿using BlogOrganizer.Models;
+using BlogOrganizer.Views;
 using Microsoft.Win32;
 using MVVMCore.BaseClass;
 using MVVMCore.Common.Utilities;
@@ -172,6 +173,7 @@ namespace BlogOrganizer.ViewModels
         {
             try
             {
+                this.ManualContents.Post_date = DateTime.Now;
                 this.BlogElement.WpContents.Items.Add(this.ManualContents);
                 this.ManualContents = new Wp_ContentsM();
             }
@@ -441,6 +443,10 @@ namespace BlogOrganizer.ViewModels
         }
         #endregion
 
+        #region 各記事の保存処理
+        /// <summary>
+        /// 各記事の保存処理
+        /// </summary>
         public void SaveArticles()
         {
             try
@@ -463,7 +469,12 @@ namespace BlogOrganizer.ViewModels
                 ShowMessage.ShowErrorOK(e.Message, "Error");
             }
         }
+        #endregion
 
+        #region 各記事のファイル読み込み処理
+        /// <summary>
+        /// 各記事のファイル読み込み処理
+        /// </summary>
         public void LoadArticles()
         {
             try
@@ -485,6 +496,7 @@ namespace BlogOrganizer.ViewModels
                 ShowMessage.ShowErrorOK(e.Message, "Error");
             }
         }
+        #endregion
 
         #region 全記事からカテゴリの作成処理
         /// <summary>
@@ -492,10 +504,24 @@ namespace BlogOrganizer.ViewModels
         /// </summary>
         public void CreateCategory()
         {
-            this.Categorys = this.BlogElement.GetCategorys();
-            this.BlogElement.SetContentsCount();
-            this.BlogElement.SetCategoryCount();
+            try
+            {
+                // 確認
+                if (ShowMessage.ShowQuestionYesNo("各記事の情報からカテゴリのリストを作成します。\r\n記事・文字数によっては数分程度かかる場合があります。\r\n実行してもよろしいですか？", "確認") == System.Windows.MessageBoxResult.Yes)
+                {
+                    this.Categorys = this.BlogElement.GetCategorys();
+                    this.BlogElement.SetContentsCount();
+                    this.BlogElement.SetCategoryCount();
+
+                    ShowMessage.ShowNoticeOK("カテゴリの作成が完了しました。", "通知");
+                }
+            }
+            catch (Exception e)
+            {
+                ShowMessage.ShowErrorOK(e.Message, "Error");
+            }
         }
         #endregion
+
     }
 }
