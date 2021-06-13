@@ -40,105 +40,8 @@ namespace BlogOrganizer.ViewModels
         #endregion
 
 
-        #region 数量表示[CountDisplay]プロパティ
-        /// <summary>
-        /// 数量表示[CountDisplay]プロパティ用変数
-        /// </summary>
-        bool _CountDisplay = false;
-        /// <summary>
-        /// 数量表示[CountDisplay]プロパティ
-        /// </summary>
-        public bool CountDisplay
-        {
-            get
-            {
-                return _CountDisplay;
-            }
-            set
-            {
-                if (!_CountDisplay.Equals(value))
-                {
-                    _CountDisplay = value;
-                    NotifyPropertyChanged("CountDisplay");
-                }
-            }
-        }
-        #endregion
+        
 
-        #region 全行数[RowNum]プロパティ
-        /// <summary>
-        /// 全行数[RowNum]プロパティ用変数
-        /// </summary>
-        int _RowNum = 0;
-        /// <summary>
-        /// 全行数[RowNum]プロパティ
-        /// </summary>
-        public int RowNum
-        {
-            get
-            {
-                return _RowNum;
-            }
-            set
-            {
-                if (!_RowNum.Equals(value))
-                {
-                    _RowNum = value;
-                    NotifyPropertyChanged("RowNum");
-                }
-            }
-        }
-        #endregion
-
-        #region 名詞数[NounNum]プロパティ
-        /// <summary>
-        /// 名詞数[NounNum]プロパティ用変数
-        /// </summary>
-        int _NounNum = 0;
-        /// <summary>
-        /// 名詞数[NounNum]プロパティ
-        /// </summary>
-        public int NounNum
-        {
-            get
-            {
-                return _NounNum;
-            }
-            set
-            {
-                if (!_NounNum.Equals(value))
-                {
-                    _NounNum = value;
-                    NotifyPropertyChanged("NounNum");
-                }
-            }
-        }
-        #endregion
-
-        #region カテゴリTopXの指定数[CategoryTop]プロパティ
-        /// <summary>
-        /// カテゴリTopXの指定数[CategoryTop]プロパティ用変数
-        /// </summary>
-        int _CategoryTop = 1;
-        /// <summary>
-        /// カテゴリTopXの指定数[CategoryTop]プロパティ
-        /// </summary>
-        public int CategoryTop
-        {
-            get
-            {
-                return _CategoryTop;
-            }
-            set
-            {
-                if (!_CategoryTop.Equals(value))
-                {
-                    _CategoryTop = value;
-                    NotifyPropertyChanged("CategoryTop");
-                }
-            }
-        }
-        #endregion
 
 
         #region 初期化処理
@@ -284,30 +187,6 @@ namespace BlogOrganizer.ViewModels
         }
         #endregion
 
-        #region 各記事のタグの区切り文字(true:カンマ false(数))[ArticleNounDelimita]プロパティ
-        /// <summary>
-        /// 各記事のタグの区切り文字(true:カンマ false(数))[ArticleNounDelimita]プロパティ用変数
-        /// </summary>
-        bool _ArticleNounDelimita = false;
-        /// <summary>
-        /// 各記事のタグの区切り文字(true:カンマ false(数))[ArticleNounDelimita]プロパティ
-        /// </summary>
-        public bool ArticleNounDelimita
-        {
-            get
-            {
-                return _ArticleNounDelimita;
-            }
-            set
-            {
-                if (!_ArticleNounDelimita.Equals(value))
-                {
-                    _ArticleNounDelimita = value;
-                    NotifyPropertyChanged("ArticleNounDelimita");
-                }
-            }
-        }
-        #endregion
 
         #region ファイルを開く処理
         /// <summary>
@@ -362,7 +241,7 @@ namespace BlogOrganizer.ViewModels
             try
             {
                 // MeCabで各記事を形態素解析
-                this.BlogElement.AnalysisMeCab(this.ArticleNounDelimita);
+                this.BlogElement.AnalysisMeCab(this.BlogElement.ArticleNounDelimita);
             }
             catch (Exception e)
             {
@@ -380,7 +259,7 @@ namespace BlogOrganizer.ViewModels
 
             foreach (var tmp in this.BlogElement.WpContents.Items)
             {
-                var cate = tmp.GetCategory(this.Categorys, this.CategoryTop, this.CountDisplay);
+                var cate = tmp.GetCategory(this.Categorys, this.BlogElement.CategoryTop, this.BlogElement.CountDisplay);
                 tmp.Category = cate;
             }
 
@@ -523,5 +402,23 @@ namespace BlogOrganizer.ViewModels
         }
         #endregion
 
+        #region 全てクリア
+        /// <summary>
+        /// 全てクリア
+        /// </summary>
+        public void Clear()
+        {
+            try
+            {
+                this.BlogElement = new BlogM();
+                this.Categorys = new ModelList<CategoryM>();
+                NotifyPropertyChanged("CategoryRowCount");
+            }
+            catch (Exception e)
+            {
+                ShowMessage.ShowErrorOK(e.Message, "Error");
+            }
+        }
+        #endregion
     }
 }

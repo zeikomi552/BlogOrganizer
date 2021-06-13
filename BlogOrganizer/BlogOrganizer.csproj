@@ -4,6 +4,15 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.1</FileVersion>
+    <Authors>Zeikomi552</Authors>
+    <Version>1.0.1</Version>
+    <PackageId>TagCateKun</PackageId>
+    <Product>TagCateKun</Product>
+    <Description>文章の頻出名詞を抜き出します
+</Description>
+    <Copyright>Zeikomi552</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

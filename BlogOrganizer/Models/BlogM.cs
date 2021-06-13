@@ -11,6 +11,82 @@ namespace BlogOrganizer.Models
 {
 	public class BlogM : ModelBase
 	{
+		#region 数量表示[CountDisplay]プロパティ
+		/// <summary>
+		/// 数量表示[CountDisplay]プロパティ用変数
+		/// </summary>
+		bool _CountDisplay = true;
+		/// <summary>
+		/// 数量表示[CountDisplay]プロパティ
+		/// </summary>
+		public bool CountDisplay
+		{
+			get
+			{
+				return _CountDisplay;
+			}
+			set
+			{
+				if (!_CountDisplay.Equals(value))
+				{
+					_CountDisplay = value;
+					NotifyPropertyChanged("CountDisplay");
+				}
+			}
+		}
+		#endregion
+
+
+		#region カテゴリTopXの指定数[CategoryTop]プロパティ
+		/// <summary>
+		/// カテゴリTopXの指定数[CategoryTop]プロパティ用変数
+		/// </summary>
+		int _CategoryTop = 1;
+		/// <summary>
+		/// カテゴリTopXの指定数[CategoryTop]プロパティ
+		/// </summary>
+		public int CategoryTop
+		{
+			get
+			{
+				return _CategoryTop;
+			}
+			set
+			{
+				if (!_CategoryTop.Equals(value))
+				{
+					_CategoryTop = value;
+					NotifyPropertyChanged("CategoryTop");
+				}
+			}
+		}
+		#endregion
+
+		#region 各記事のタグの区切り文字(true:カンマ false(数))[ArticleNounDelimita]プロパティ
+		/// <summary>
+		/// 各記事のタグの区切り文字(true:カンマ false(数))[ArticleNounDelimita]プロパティ用変数
+		/// </summary>
+		bool _ArticleNounDelimita = true;
+		/// <summary>
+		/// 各記事のタグの区切り文字(true:カンマ false(数))[ArticleNounDelimita]プロパティ
+		/// </summary>
+		public bool ArticleNounDelimita
+		{
+			get
+			{
+				return _ArticleNounDelimita;
+			}
+			set
+			{
+				if (!_ArticleNounDelimita.Equals(value))
+				{
+					_ArticleNounDelimita = value;
+					NotifyPropertyChanged("ArticleNounDelimita");
+				}
+			}
+		}
+		#endregion
+
 		#region wp_contentsの要素[WpContents]プロパティ
 		/// <summary>
 		/// wp_contentsの要素[WpContents]プロパティ用変数

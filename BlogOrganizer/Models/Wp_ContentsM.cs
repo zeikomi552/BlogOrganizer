@@ -11,7 +11,6 @@ namespace BlogOrganizer.Models
 {
 	public class Wp_ContentsM : ModelBase
 	{
-
 		#region Insert文の1要素分お挿入句の全文[FullText]プロパティ
 		/// <summary>
 		/// Insert文の1要素分お挿入句の全文[FullText]プロパティ用変数
