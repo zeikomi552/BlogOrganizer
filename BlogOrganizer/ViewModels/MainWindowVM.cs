@@ -139,6 +139,8 @@ namespace BlogOrganizer.ViewModels
                     //第1引数：ファイルパス
                     //第2引数：追記するテキスト 
                     File.WriteAllText(dialog.FileName, content.ToString());
+
+                    ShowMessage.ShowNoticeOK("各記事を一つのファイルにまとめて保存しました。\r\nKH Coderとかで分析すると何か見えるかもしれません。", "通知");
                 }
             }
             catch (Exception e)
@@ -240,8 +242,12 @@ namespace BlogOrganizer.ViewModels
         {
             try
             {
-                // MeCabで各記事を形態素解析
-                this.BlogElement.AnalysisMeCab(this.BlogElement.ArticleNounDelimita);
+                // 確認
+                if (ShowMessage.ShowQuestionYesNo("各記事のタグを作成します。\r\n記事・文字数によっては数分程度かかる場合があります。\r\n実行してもよろしいですか？", "確認") == System.Windows.MessageBoxResult.Yes)
+                {
+                    // MeCabで各記事を形態素解析
+                    this.BlogElement.AnalysisMeCab(this.BlogElement.ArticleNounDelimita);
+                }
             }
             catch (Exception e)
             {
