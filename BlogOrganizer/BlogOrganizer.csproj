@@ -5,7 +5,7 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyVersion>1.0.0.4</AssemblyVersion>
-    <FileVersion>1.0.0.3</FileVersion>
+    <FileVersion>1.0.0.4</FileVersion>
     <Authors>Zeikomi552</Authors>
     <Version>1.0.4</Version>
     <PackageId>TagCateKun</PackageId>
