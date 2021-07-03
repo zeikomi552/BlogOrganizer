@@ -138,6 +138,7 @@
                                     <DataGridTextColumn IsReadOnly="True" Header="ID" Binding="{Binding ID}"/>
                                     <DataGridTextColumn Header="タイトル" Binding="{Binding Post_title}"/>
                                     <DataGridTextColumn IsReadOnly="True" Header="登録日" Binding="{Binding Post_date}"/>
+                                    <DataGridTextColumn IsReadOnly="True" Header="投稿名" Binding="{Binding Post_name}"/>
                                     <DataGridTextColumn IsReadOnly="True" Header="カテゴリ" Binding="{Binding Category}"/>
                                     <DataGridTextColumn IsReadOnly="True" Header="Top5 タグ" Binding="{Binding Top5Noun}"/>
                                     <DataGridTextColumn IsReadOnly="True" Header="All タグ" Binding="{Binding TopNounAll}"/>
@@ -216,7 +217,7 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button Visibility="Collapsed" Margin="5" Height="30" VerticalAlignment="Center" Content="ﾊﾞｯｸｱｯﾌﾟ選択">
+            <Button Margin="5" Height="30" VerticalAlignment="Center" Content="ﾊﾞｯｸｱｯﾌﾟ選択">
                 <b:Interaction.Triggers>
                     <b:EventTrigger EventName="Click">
                         <b:CallMethodAction TargetObject="{Binding}" MethodName="OpenFile"/>
